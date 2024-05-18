@@ -25,7 +25,7 @@ class APIService {
     }
   }
 
-  static Future<bool> saveUser(
+ /* static Future<bool> saveUser(
     RegisterModel model,
   ) async{
 
@@ -40,10 +40,10 @@ class APIService {
     if (response.statusCode == 200){
       var data = jsonDecode(response.body);
 
-      return registerFromJson(data["data"]);
+     // return registerFromJson(data["data"]);
     }
-    else{
+    /*else{
       return null;
-    }
-  }
+    }*/
+  }*/
 }

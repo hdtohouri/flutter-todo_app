@@ -1,4 +1,63 @@
 import 'package:flutter/material.dart';
+import './login.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+
+
+class UserRegister {
+  String? email;
+  String? username;
+  String? password;
+
+  UserRegister({
+    required this.email,
+    required this.username,
+    required this.password,
+  });
+
+  factory UserRegister.fromJson(Map<String, dynamic> json) {
+    return switch (json) {
+      {
+        'email': String? email,
+        'username': String? username,
+        'password': String? password,
+      } =>
+        UserRegister(
+          email: email,
+          username: username,
+          password: password,
+        ),
+      _ => throw const FormatException('Failed to register User.'),
+    };
+  }
+}
+
+
+Future<UserRegister> saveUser(String email, String username, String password) async {
+  final response = await http
+      .post(Uri.parse('http://192.168.1.3:5000/register'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+            'email': email,
+            'username': username,
+            'password': password,
+        }),
+      
+      );
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    return UserRegister.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Erreur lors de l\'enregistement de l\'utilisateur');
+  }
+}
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -8,6 +67,8 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+
+  Future<UserRegister>? _futureRegister;
   final _formKey = GlobalKey<FormState>();
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
@@ -15,6 +76,12 @@ class _RegisterState extends State<Register> {
   String? email;
   String? password;
   String? username;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +174,17 @@ class _RegisterState extends State<Register> {
                           height: 50,
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                           if (_formKey.currentState!.validate()) {
+                              setState(() {
+                                email = emailController.text;
+                                username = usernameController.text;
+                                password = passwordController.text;
+                                _futureRegister = saveUser(email!, username!, password!);
+                                Navigator.pop(context, MaterialPageRoute(builder: (context) => const Login()));
+                              });
+                            }
+                          },
                           child: Text(
                             "S'INSCRIRE",
                             style: TextStyle(
