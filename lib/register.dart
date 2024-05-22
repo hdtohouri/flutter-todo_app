@@ -86,6 +86,9 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        '/login': (context) => Login(),
+      },
       home: Scaffold(
         body: SingleChildScrollView(
           child: Column(
@@ -181,7 +184,7 @@ class _RegisterState extends State<Register> {
                                 username = usernameController.text;
                                 password = passwordController.text;
                                 _futureRegister = saveUser(email!, username!, password!);
-                                Navigator.pop(context, MaterialPageRoute(builder: (context) => const Login()));
+                               // Navigator.pop(context, MaterialPageRoute(builder: (context) => const Login()));
                               });
                             }
                           },
@@ -204,8 +207,23 @@ class _RegisterState extends State<Register> {
                           height: 25,
                         ),
                         //RichText(text: text)
-                        Text("Vous avez un compte ? Se connecter",
-                            style: TextStyle(fontSize: 15))
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 30),
+                              child: Text("Vous avez un compte ?",
+                              style: TextStyle(fontSize: 17)),
+                            ),
+                            SizedBox(width: 5,),
+                            InkWell(
+                              onTap: (){
+                               Navigator.push(context, MaterialPageRoute(builder: (context)=> Login()));
+                              },
+                              child: Text("Se connecter",
+                              style: TextStyle(fontSize: 17, color: Colors.orange[400])),
+                            )
+                          ],
+                        )
                       ],
                     ),
                   ))
